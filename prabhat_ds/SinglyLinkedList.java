@@ -1,5 +1,5 @@
-package prabhat_ds;
-public class SinglyLinkedList
+
+public class SinglyLinkedList<E> 
 {
   //---------------- nested Node class ----------------
   /**
@@ -7,14 +7,13 @@ public class SinglyLinkedList
    * element and to the subsequent node in the list (or null if this
    * is the last node).
    */
-
-  private static class Node 
+  private static class Node<E> 
   {
     /** The element stored at this node */
-    private int element;            // reference to the element stored at this node
+    private E element;            // reference to the element stored at this node
 
     /** A reference to the subsequent node in the list */
-    private Node next;         // reference to the subsequent node in the list
+    private Node<E> next;         // reference to the subsequent node in the list
 
     /**
      * Creates a node with the given element and next node.
@@ -22,10 +21,10 @@ public class SinglyLinkedList
      * @param e  the element to be stored
      * @param n  reference to a node that should follow the new node
      */
-    public Node(int e, Node n) 
+    public Node(E e, Node<E> n) 
     {
-      this.element = e;
-      this.next = n;
+      element = e;
+      next = n;
     }
 
     // Accessor methods
@@ -33,39 +32,34 @@ public class SinglyLinkedList
      * Returns the element stored at the node.
      * @return the element stored at the node
      */
-    public int getElement() 
+    public E getElement() 
     { 
-      return this.element;
+      return element; 
     }
 
     /**
      * Returns the node that follows this one (or null if no such node).
      * @return the following node
      */
-    public Node getNext() 
-    { 
-      return this.next;
-    }
+    public Node<E> getNext() { return next; }
 
     // Modifier methods
     /**
      * Sets the node's next reference to point to Node n.
      * @param n    the node that should follow this one
      */
-    public void setNext(Node n) 
-    { 
-      this.next = n;
-    }
+    public void setNext(Node<E> n) { next = n; }
   } //----------- end of nested Node class -----------
 
 
   // instance variables of the SinglyLinkedList
   /** The head node of the list */
 
-  private Node head = null;               // head node of the list (or null if empty)
+  private Node<E> head = null;               // head node of the list (or null if empty)
+
 
   /** The last node of the list */
-  private Node tail = null;               // last node of the list (or null if empty)
+  private Node<E> tail = null;               // last node of the list (or null if empty)
 
 
   /** Number of nodes in the list */
@@ -73,8 +67,7 @@ public class SinglyLinkedList
 
 
   /** Constructs an initially empty list. */
-  public SinglyLinkedList() { 
-  }              // constructs an initially empty list
+  public SinglyLinkedList() { }              // constructs an initially empty list
 
 
   // access methods
@@ -82,29 +75,21 @@ public class SinglyLinkedList
    * Returns the number of elements in the linked list.
    * @return number of elements in the linked list
    */
-  public int size() 
-  {  
-    return size;
-  }
+  public int size() { return size; }
 
 
   /**
    * Tests whether the linked list is empty.
    * @return true if the linked list is empty, false otherwise
    */
-  public boolean isEmpty() 
-  {
-    if(size == 0)
-      return true;
-    return false; 
-  }
+  public boolean isEmpty() { return size == 0; }
 
   /**
    * Returns (but does not remove) the first element of the list
    * @return element at the front of the list (or null if empty)
    */
-  public int first() // returns (but does not remove) the first element
-  {
+  public E first() {             // returns (but does not remove) the first element
+    if (isEmpty()) return null;
     return head.getElement();
   }
 
@@ -112,8 +97,8 @@ public class SinglyLinkedList
    * Returns (but does not remove) the last element of the list.
    * @return element at the end of the list (or null if empty)
    */
-  public int last() 
-  {              // returns (but does not remove) the last element
+  public E last() {              // returns (but does not remove) the last element
+    if (isEmpty()) return null;
     return tail.getElement();
   }
 
@@ -122,15 +107,10 @@ public class SinglyLinkedList
    * Adds an element to the front of the list.
    * @param e  the new element to add
    */
-  public void addFirst(int e) 
-  {                // adds element e to the front of the list
-    if(head == null){
-      Node newNode = new Node(e,null);
-      head = tail = newNode;
-    }
-    else{
-      head = new Node(e, head);
-    }
+  public void addFirst(E e) {                // adds element e to the front of the list
+    head = new Node<>(e, head);              // create and link a new node
+    if (size == 0)
+      tail = head;                           // special case: new node becomes tail also
     size++;
   }
 
@@ -138,16 +118,13 @@ public class SinglyLinkedList
    * Adds an element to the end of the list.
    * @param e  the new element to add
    */
-  public void addLast(int e) 
-  {                 // adds element e to the end of the list
-    Node newNode = new Node(e, null);
-    if(head == null){
-      head = tail = newNode;
-    }
-    else{
-      tail.setNext(newNode);
-      tail = newNode;
-    }
+  public void addLast(E e) {                 // adds element e to the end of the list
+    Node<E> newest = new Node<>(e, null);    // node will eventually be the tail
+    if (isEmpty())
+      head = newest;                         // special case: previously empty list
+    else
+      tail.setNext(newest);                  // new node after existing tail
+    tail = newest;                           // new node becomes the tail
     size++;
   }
 
@@ -155,11 +132,14 @@ public class SinglyLinkedList
    * Removes and returns the first element of the list.
    * @return the removed element (or null if empty)
    */
-  public int removeFirst() 
-  {                   // removes and returns the first element
-    Node np = head;
-    head = head.next;
-    return np.element;
+  public E removeFirst() {                   // removes and returns the first element
+    if (isEmpty()) return null;              // nothing to remove
+    E answer = head.getElement();
+    head = head.getNext();                   // will become null if list had only one node
+    size--;
+    if (size == 0)
+      tail = null;                           // special case as list is now empty
+    return answer;
   }
 
 
@@ -167,10 +147,9 @@ public class SinglyLinkedList
    * Produces a string representation of the contents of the list.
    * This exists for debugging purposes only.
    */
-  public String toString() 
-  {
+  public String toString() {
     StringBuilder sb = new StringBuilder("(");
-    Node walk = head;
+    Node<E> walk = head;
     while (walk != null) {
       sb.append(walk.getElement());
       if (walk != tail)
