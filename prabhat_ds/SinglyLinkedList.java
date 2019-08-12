@@ -1,5 +1,9 @@
+package prabhat_ds;
 
-public class SinglyLinkedList<E> 
+import java.util.Stack;
+
+
+public class SinglyLinkedList<E extends Comparable<E>>
 {
   //---------------- nested Node class ----------------
   /**
@@ -159,4 +163,81 @@ public class SinglyLinkedList<E>
     sb.append(")");
     return sb.toString();
   }
+
+  public SinglyLinkedList<E> mergeSortedList(SinglyLinkedList<E> l){
+    SinglyLinkedList<E> rhead = new SinglyLinkedList<E>();
+    Node<E> walk = head;
+    Node<E> walk1 = l.head;
+    while(walk!= null && walk1!= null){
+      if(walk.getElement().compareTo(walk1.getElement()) < 0){
+        rhead.addLast(walk.getElement());
+        walk = walk.getNext();
+      }
+      else{
+        rhead.addLast(walk1.getElement());
+        walk1 = walk1.getNext();
+      }
+      
+    }
+    if(walk!=null){
+      while(walk!=null){
+        rhead.addLast(walk.getElement());
+        walk = walk.getNext();
+      }
+    }
+    else{
+      while(walk1!=null){
+        rhead.addLast(walk1.getElement());
+        walk1 = walk1.getNext();
+      }
+    }
+    return rhead;
+  }
+
+  public boolean isPalindrome(){
+    boolean isPalindrome = true;
+    Node<E> walk = head;
+    Node<E> walk1 = head;
+    Stack<E> s = new Stack<>();
+    int count = 0;
+    while(walk1!=null){
+      count++;
+      s.push(walk.getElement());
+      walk = walk.getNext();
+      walk1 = walk1.getNext();
+      if(walk1 == null)
+        break;
+      else{
+        walk1 = walk1.getNext();
+      }
+    }
+    if(count%2 != 0){
+      s.pop();
+    }
+
+    while(walk!=null && !s.isEmpty()){
+      // System.out.println(walk.getElement());
+      // System.out.println(s.pop());
+      if(walk.getElement().compareTo(s.pop())!= 0)
+        return false;
+      walk = walk.getNext();
+    }
+
+    return isPalindrome;
+  }
+
+  public SinglyLinkedList<E> reverseList(){
+    Node<E> walk = head;
+    Stack<E> s = new Stack<>();
+    while(walk != null){
+      s.push(walk.getElement());
+      walk = walk.getNext();
+    }
+    SinglyLinkedList<E> t = new SinglyLinkedList<>();
+    while(!s.isEmpty()){
+      t.addLast(s.pop());
+    }
+    return t;
+  }
+
 }
